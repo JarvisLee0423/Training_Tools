@@ -11,6 +11,34 @@ import torch
 from torch.utils.data import DataLoader
 from torchvision import transforms, datasets
 
+# Set the class to generator the dataset.
+class GetDataset(torch.utils.data.Dataset):
+    '''
+        This class is used to get the datasets.\n
+        This class contains three parts:\n
+            - '__init__' is used to get the raw data and raw target.
+            - '__getitem__' is used to get each data and each target.
+            - '__len__' is used to get the length of each data.
+    '''
+    # Create the constructor.
+    def __init__(self, rawData, rawTarget):
+        # Create the super constructor.
+        super(GetDataset, self).__init__()
+        # Get the raw data and raw target.
+        self.data = rawData
+        self.target = rawTarget
+    
+    # Set the function to get each data and target.
+    def __getitem__(self, index):
+        data = self.data[index]
+        target = self.target[index]
+        # Return the data and target.
+        return data, target
+    
+    # Set the function to get the length of the data.
+    def __len__(self):
+        return len(self.data)
+
 # Set the class to encapsulate all the functions.
 class Preprocessor():
     '''
@@ -202,3 +230,9 @@ if __name__ == "__main__":
     trainSet, devSet = Preprocessor.ImageNet(32, [0.5, 0.5, 0.5], [0.5, 0.5, 0.5], 64, './Datasets')
     print(type(trainSet))
     print(type(devSet))
+    rawData = torch.randn(100, 10, 10)
+    rawTarget = torch.randint(0, 2, (100, 1))
+    data = GetDataset(rawData, rawTarget)
+    trainData = DataLoader(data, 32, shuffle = False, drop_last = False)
+    for i, (data, target) in enumerate(trainData):
+        print(f"Data {i}: shape: {data.shape}, {target.shape}")
