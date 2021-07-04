@@ -178,9 +178,15 @@ if __name__ == "__main__":
         else:
             print(' ')
         if evalLoss == None:
-            logger.info('Epoch [%d/%d] -> Training: Loss [%.4f] - Acc [%.4f] || Memory: [%.4f/%.4f] MB' % (epoch + 1, Cfg.epoches, trainLoss, trainAcc, memory, pynvml.nvmlDeviceGetMemoryInfo(handle).total / 1024 / 1024))
+            if Cfg.GPUID > -1:
+                logger.info('Epoch [%d/%d] -> Training: Loss [%.4f] - Acc [%.4f] || Memory: [%.4f/%.4f] MB' % (epoch + 1, Cfg.epoches, trainLoss, trainAcc, memory, pynvml.nvmlDeviceGetMemoryInfo(handle).total / 1024 / 1024))
+            else:
+                logger.info('Epoch [%d/%d] -> Training: Loss [%.4f] - Acc [%.4f]' % (epoch + 1, Cfg.epoches, trainLoss, trainAcc))
         else:
-            logger.info('Epoch [%d/%d] -> Training: Loss [%.4f] - Acc [%.4f] || Evaluating: Loss [%.4f] - Acc [%.4f] || Memory: [%.4f/%.4f] MB' % (epoch + 1, Cfg.epoches, trainLoss, trainAcc, evalLoss, evalAcc, memory, pynvml.nvmlDeviceGetMemoryInfo(handle).total / 1024 / 1024))
+            if Cfg.GPUID > -1:
+                logger.info('Epoch [%d/%d] -> Training: Loss [%.4f] - Acc [%.4f] || Evaluating: Loss [%.4f] - Acc [%.4f] || Memory: [%.4f/%.4f] MB' % (epoch + 1, Cfg.epoches, trainLoss, trainAcc, evalLoss, evalAcc, memory, pynvml.nvmlDeviceGetMemoryInfo(handle).total / 1024 / 1024))
+            else:
+                logger.info('Epoch [%d/%d] -> Training: Loss [%.4f] - Acc [%.4f] || Evaluating: Loss [%.4f] - Acc [%.4f]' % (epoch + 1, Cfg.epoches, trainLoss, trainAcc, evalLoss, evalAcc))
         Logger.VisDrawer(vis = vis, epoch = epoch + 1, trainLoss = trainLoss, evalLoss = evalLoss, trainAcc = trainAcc, evalAcc = evalAcc)
         # Save the model.
         torch.save(model.state_dict(), Cfg.modelDir + f'/{currentTime}.pt')
